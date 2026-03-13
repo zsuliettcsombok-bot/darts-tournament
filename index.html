@@ -150,13 +150,6 @@
       font-weight:700;
     }
 
-    .tabs{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin:14px 0;
-    }
-
     .grid{
       display:grid;
       grid-template-columns:380px 1fr;
@@ -261,27 +254,10 @@
       opacity:.62;
     }
 
-    .quick-teams,
     .opponents{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
-    }
-
-    .chip{
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      font-size:13px;
-      cursor:pointer;
-      user-select:none;
-    }
-
-    .chip.active{
-      background:linear-gradient(180deg,var(--red),var(--red2));
-      border-color:rgba(255,255,255,.16);
     }
 
     .state-btn{
@@ -480,7 +456,6 @@
       .row > *{width:100%}
       .top-actions button{width:auto}
       .pill-row .pill,
-      .quick-teams .chip,
       .opponents .state-btn{width:auto}
     }
   </style>
@@ -492,7 +467,7 @@
         <div class="logo">🎯</div>
         <div>
           <h1>Dart Páros Verseny</h1>
-          <div class="sub">Oda-visszavágós, egy leges rendszer. Az első csapatot kiválasztod, utána csak a valós ellenfelek jelennek meg. Piros–fekete–zöld dartos kinézettel.</div>
+          <div class="sub">Oda-visszavágós, egy leges rendszer. Az első csapat lenyíló listából választható, utána csak annak a párosnak a meccsei látszanak.</div>
         </div>
       </div>
 
@@ -553,17 +528,13 @@
 
           <div class="section">
             <h3>Első csapat kiválasztása</h3>
-            <label for="teamInput">Írd be pl. AB vagy Pisti Béla</label>
-            <div class="row">
-              <input id="teamInput" type="text" placeholder="AB vagy Pisti Béla" />
-              <button id="btnPickTeam">Kiválasztás</button>
-            </div>
-            <div class="row" style="margin-top:8px">
+            <label for="teamSelect">Válassz párost</label>
+            <select id="teamSelect"></select>
+            <div class="row" style="margin-top:10px">
               <button id="btnClearTeam" class="secondary">Szűrő törlése</button>
               <button id="btnRebuild" class="secondary">Újragenerálás</button>
             </div>
             <div class="footer-note" id="activeTeamInfo">Nincs kiválasztott csapat.</div>
-            <div id="teamQuickList" class="quick-teams" style="margin-top:10px"></div>
           </div>
         </div>
       </aside>
@@ -573,7 +544,7 @@
           <div class="card">
             <div class="card-head">
               <h2 class="card-title">Meccsek</h2>
-              <div class="card-sub">Az első csapat után a második csapatok gombként jelennek meg. Zöld: 2 meccs maradt. Sárga: 1 meccs maradt. Piros: kész, nem kattintható.</div>
+              <div class="card-sub">A második csapatok gombként jelennek meg. Zöld: 2 meccs maradt. Sárga: 1 meccs maradt. Piros: kész, nem kattintható.</div>
             </div>
             <div class="card-body">
               <div class="section">
@@ -630,7 +601,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "dart_pairs_tournament_final_v1";
+    const STORAGE_KEY = "dart_pairs_tournament_final_v2";
 
     const app = {
       players: [],
@@ -679,28 +650,6 @@
       return a.p1 === b.p1 && a.p2 === b.p2;
     }
 
-    function normalizeTeamInput(text){
-      const raw = String(text || "").trim();
-      if(!raw) return null;
-
-      const teams = getTeams();
-      const compact = raw.toLowerCase().replace(/\s+/g,"");
-
-      const direct = teams.find(t => teamLabel(t).toLowerCase() === compact);
-      if(direct) return direct;
-
-      const parts = raw.split(/[,;+\/| -]+/).map(x => x.trim()).filter(Boolean);
-      if(parts.length === 2){
-        const p1 = app.players.findIndex(p => String(p).trim().toLowerCase() === parts[0].toLowerCase());
-        const p2 = app.players.findIndex(p => String(p).trim().toLowerCase() === parts[1].toLowerCase());
-        if(p1 >= 0 && p2 >= 0 && p1 !== p2){
-          const [a,b] = [p1,p2].sort((x,y)=>x-y);
-          return { id:`${a}-${b}`, p1:a, p2:b };
-        }
-      }
-      return null;
-    }
-
     function generateMatches(){
       const teams = getTeams();
       const matches = [];
@@ -736,11 +685,7 @@
       const first = legPlayed(m.score1, m.score2);
       const second = legPlayed(m.returnScore1, m.returnScore2);
       const left = (first ? 0 : 1) + (second ? 0 : 1);
-      return {
-        first,
-        second,
-        left
-      };
+      return { first, second, left };
     }
 
     function calcStats(){
@@ -816,6 +761,8 @@
         const [a,b] = app.selectedTeamId.split("-").map(Number);
         const team = { p1:a, p2:b };
         arr = arr.filter(m => sameTeam(m.team1, team));
+      } else {
+        return [];
       }
 
       if(app.filter === "nyitott"){
@@ -852,6 +799,10 @@
     function saveData(){
       localStorage.setItem(STORAGE_KEY, JSON.stringify(app));
       alert("Mentve ezen az eszközön.");
+    }
+
+    function saveDataSilently(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(app));
     }
 
     function loadData(){
@@ -910,10 +861,6 @@
       reader.readAsText(file);
     }
 
-    function saveDataSilently(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(app));
-    }
-
     function setPlayerCount(){
       let count = Number(document.getElementById("playerCount").value || 13);
       if(count < 4) count = 4;
@@ -945,28 +892,14 @@
     function clearTeam(){
       app.selectedTeamId = "";
       app.opponentSearch = "";
-      document.getElementById("teamInput").value = "";
+      document.getElementById("teamSelect").value = "";
       renderAll();
       saveDataSilently();
     }
 
-    function pickTeam(){
-      const input = document.getElementById("teamInput").value;
-      const found = normalizeTeamInput(input);
-      if(!found){
-        alert("Nem találtam ilyen párost.");
-        return;
-      }
-      app.selectedTeamId = found.id;
-      app.opponentSearch = "";
-      renderAll();
-      saveDataSilently();
-    }
-
-    function chooseQuickTeam(id){
-      app.selectedTeamId = id;
-      const team = getTeams().find(t => t.id === id);
-      document.getElementById("teamInput").value = team ? teamLabel(team) : "";
+    function changeSelectedTeam(){
+      const val = document.getElementById("teamSelect").value;
+      app.selectedTeamId = val;
       app.opponentSearch = "";
       renderAll();
       saveDataSilently();
@@ -1038,11 +971,8 @@
     function setManualScore(id, field, value){
       const m = app.matches.find(x => x.id === id);
       if(!m) return;
-
       const v = String(value || "").replace(/[^01]/g, "").slice(0,1);
       m[field] = v;
-
-      // ha egyik 0 vagy 1, a másik legyen ellentétes, ha ugyanaz lenne, hagyjuk kézi szerkesztésre
       renderRanking();
       renderStats();
       renderOpponents();
@@ -1068,6 +998,8 @@
         inp.value = name;
         inp.addEventListener("change", () => {
           app.players[idx] = inp.value;
+          const currentTeamStillExists = getTeams().some(t => t.id === app.selectedTeamId);
+          if(!currentTeamStillExists) app.selectedTeamId = "";
           renderAll();
           saveDataSilently();
         });
@@ -1080,16 +1012,21 @@
       box.appendChild(grid);
     }
 
-    function renderQuickTeams(){
-      const box = document.getElementById("teamQuickList");
-      box.innerHTML = "";
+    function renderTeamSelect(){
+      const sel = document.getElementById("teamSelect");
+      sel.innerHTML = "";
 
-      getTeams().slice(0, 32).forEach(t => {
-        const b = document.createElement("div");
-        b.className = "chip" + (app.selectedTeamId === t.id ? " active" : "");
-        b.textContent = teamLabel(t);
-        b.onclick = () => chooseQuickTeam(t.id);
-        box.appendChild(b);
+      const empty = document.createElement("option");
+      empty.value = "";
+      empty.textContent = "Válassz első párost...";
+      sel.appendChild(empty);
+
+      getTeams().forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.id;
+        opt.textContent = teamLabel(t);
+        if(app.selectedTeamId === t.id) opt.selected = true;
+        sel.appendChild(opt);
       });
     }
 
@@ -1109,7 +1046,7 @@
 
       const opts = opponentOptions();
       if(!app.selectedTeamId){
-        box.innerHTML = `<div class="muted">Előbb válassz első csapatot.</div>`;
+        box.innerHTML = `<div class="muted">Előbb válassz első csapatot a lenyíló listából.</div>`;
         return;
       }
       if(opts.length === 0){
@@ -1147,6 +1084,11 @@
       box.innerHTML = "";
 
       const arr = filteredMatches();
+
+      if(!app.selectedTeamId){
+        box.innerHTML = `<div class="section"><div class="muted">Válassz egy első párost a lenyíló listából, és itt megjelennek a meccsei.</div></div>`;
+        return;
+      }
 
       if(arr.length === 0){
         box.innerHTML = `<div class="section"><div class="muted">Nincs ilyen meccs a jelenlegi szűrés mellett.</div></div>`;
@@ -1252,7 +1194,7 @@
       document.getElementById("playerCount").value = app.playerCount;
       document.getElementById("searchOpponent").value = app.opponentSearch;
       renderPlayersEditor();
-      renderQuickTeams();
+      renderTeamSelect();
       renderActiveTeamInfo();
       renderStats();
       renderOpponents();
@@ -1267,8 +1209,9 @@
     function bindEvents(){
       document.getElementById("btnSetCount").onclick = setPlayerCount;
       document.getElementById("btnRebuild").onclick = rebuildSchedule;
-      document.getElementById("btnPickTeam").onclick = pickTeam;
       document.getElementById("btnClearTeam").onclick = clearTeam;
+      document.getElementById("teamSelect").addEventListener("change", changeSelectedTeam);
+
       document.getElementById("btnSave").onclick = saveData;
       document.getElementById("btnExport").onclick = exportData;
       document.getElementById("btnImportOpen").onclick = () => document.getElementById("importFile").click();
