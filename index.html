@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dart Páros Verseny</title>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#0c0f14;
+color:white;
+}
+
+header{
+background:#b30000;
+padding:20px;
+text-align:center;
+font-size:28px;
+font-weight:bold;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:#161b22;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+input{
+padding:8px;
+margin:4px;
+}
+
+button{
+padding:8px 14px;
+margin:4px;
+border:none;
+border-radius:6px;
+background:#d10000;
+color:white;
+cursor:pointer;
+}
+
+button:hover{
+background:#ff0000;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:8px;
+border-bottom:1px solid #333;
+text-align:center;
+}
+
+.rank1{color:gold}
+.rank2{color:silver}
+.rank3{color:#cd7f32}
+
+</style>
+
+</head>
+
+<body>
+
+<header>🎯 Dart Páros Verseny</header>
+
+<div class="container">
+
+<div class="card">
+
+<h3>Játékosok</h3>
+
+<div id="players"></div>
+
+<button onclick="addPlayer()">+ játékos</button>
+
+</div>
+
+<div class="card">
+
+<h3>Páros kiválasztása</h3>
+
+<select id="team1"></select>
+<select id="team2"></select>
+
+<button onclick="createMatch()">Meccs hozzáadása</button>
+
+</div>
+
+<div class="card">
+
+<h3>Meccsek</h3>
+
+<table id="matchTable">
+<tr>
+<th>Páros 1</th>
+<th>Páros 2</th>
+<th>Eredmény</th>
+</tr>
+</table>
+
+</div>
+
+<div class="card">
+
+<h3>Ranglista</h3>
+
+<table id="ranking">
+<tr>
+<th>#</th>
+<th>Játékos</th>
+<th>Meccs</th>
+<th>Győzelem</th>
+<th>Vereség</th>
+<th>Pont</th>
+</tr>
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let players=[]
+let matches=[]
+let stats={}
+
+function addPlayer(){
+
+let name=prompt("Játékos neve")
+
+if(!name)return
+
+players.push(name)
+
+stats[name]={played:0,win:0,lose:0,points:0}
+
+renderPlayers()
+updateTeams()
+
+}
+
+function renderPlayers(){
+
+let div=document.getElementById("players")
+
+div.innerHTML=""
+
+players.forEach(p=>{
+
+let span=document.createElement("span")
+
+span.innerHTML=p+" "
+
+div.appendChild(span)
+
+})
+
+}
+
+function getTeams(){
+
+let teams=[]
+
+for(let i=0;i<players.length;i++){
+
+for(let j=i+1;j<players.length;j++){
+
+teams.push(players[i]+"-"+players[j])
+
+}
+
+}
+
+return teams
+
+}
+
+function updateTeams(){
+
+let teams=getTeams()
+
+let t1=document.getElementById("team1")
+let t2=document.getElementById("team2")
+
+t1.innerHTML=""
+t2.innerHTML=""
+
+teams.forEach(t=>{
+
+let o=document.createElement("option")
+o.text=t
+o.value=t
+
+t1.add(o.cloneNode(true))
+t2.add(o)
+
+})
+
+}
+
+function createMatch(){
+
+let a=document.getElementById("team1").value
+let b=document.getElementById("team2").value
+
+if(a==b)return
+
+let id=matches.length
+
+matches.push({a,b,score:null})
+
+renderMatches()
+
+}
+
+function renderMatches(){
+
+let table=document.getElementById("matchTable")
+
+table.innerHTML="<tr><th>Páros1</th><th>Páros2</th><th>Eredmény</th></tr>"
+
+matches.forEach((m,i)=>{
+
+let row=document.createElement("tr")
+
+row.innerHTML=`
+<td>${m.a}</td>
+<td>${m.b}</td>
+<td>
+<button onclick="setResult(${i},1)">1-0</button>
+<button onclick="setResult(${i},2)">0-1</button>
+</td>
+`
+
+table.appendChild(row)
+
+})
+
+}
+
+function setResult(i,winner){
+
+let m=matches[i]
+
+if(m.score)return
+
+let a=m.a.split("-")
+let b=m.b.split("-")
+
+stats[a[0]].played++
+stats[a[1]].played++
+stats[b[0]].played++
+stats[b[1]].played++
+
+if(winner==1){
+
+stats[a[0]].win++
+stats[a[1]].win++
+stats[b[0]].lose++
+stats[b[1]].lose++
+
+stats[a[0]].points++
+stats[a[1]].points++
+
+}else{
+
+stats[b[0]].win++
+stats[b[1]].win++
+stats[a[0]].lose++
+stats[a[1]].lose++
+
+stats[b[0]].points++
+stats[b[1]].points++
+
+}
+
+m.score=true
+
+renderRanking()
+
+}
+
+function renderRanking(){
+
+let arr=[]
+
+for(let p in stats){
+
+arr.push({name:p,...stats[p]})
+
+}
+
+arr.sort((a,b)=>b.points-a.points)
+
+let table=document.getElementById("ranking")
+
+table.innerHTML="<tr><th>#</th><th>Játékos</th><th>Meccs</th><th>Győzelem</th><th>Vereség</th><th>Pont</th></tr>"
+
+arr.forEach((p,i)=>{
+
+let row=document.createElement("tr")
+
+row.innerHTML=`
+<td class="rank${i+1}">${i+1}</td>
+<td>${p.name}</td>
+<td>${p.played}</td>
+<td>${p.win}</td>
+<td>${p.lose}</td>
+<td>${p.points}</td>
+`
+
+table.appendChild(row)
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
