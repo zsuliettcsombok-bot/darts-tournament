@@ -1,336 +1,1313 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dart Páros Verseny</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dart Páros Verseny</title>
+  <style>
+    :root{
+      --bg:#070b0f;
+      --card:#111821;
+      --card2:#0d131b;
+      --line:rgba(255,255,255,.08);
+      --text:#eef3f7;
+      --muted:#9fb0bf;
+      --red:#c1121f;
+      --red2:#8e0e18;
+      --green:#169b62;
+      --green2:#0f6e46;
+      --yellow:#f2c94c;
+      --yellowText:#191919;
+      --black:#050608;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:20px;
+    }
 
-<style>
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(193,18,31,.22), transparent 18%),
+        radial-gradient(circle at 80% 20%, rgba(22,155,98,.16), transparent 18%),
+        radial-gradient(circle at 50% 120%, rgba(193,18,31,.18), transparent 28%),
+        linear-gradient(180deg,#0b1016,#070b0f 45%,#05080c);
+      min-height:100vh;
+    }
 
-body{
-font-family:Arial;
-margin:0;
-background:#0c0f14;
-color:white;
-}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.13;
+      background:
+        radial-gradient(circle at center, rgba(255,255,255,.65) 0 1px, transparent 2px) center/50px 50px,
+        radial-gradient(circle at center, rgba(193,18,31,.85) 0 5px, transparent 6px) center/220px 220px;
+    }
 
-header{
-background:#b30000;
-padding:20px;
-text-align:center;
-font-size:28px;
-font-weight:bold;
-}
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.08;
+      background:
+        conic-gradient(from 0deg at 50% 50%, transparent 0 8deg, rgba(255,255,255,.25) 8deg 10deg, transparent 10deg 18deg);
+      mix-blend-mode:screen;
+    }
 
-.container{
-max-width:1200px;
-margin:auto;
-padding:20px;
-}
+    .wrap{
+      max-width:1400px;
+      margin:0 auto;
+      padding:14px;
+    }
 
-.card{
-background:#161b22;
-padding:20px;
-border-radius:10px;
-margin-bottom:20px;
-}
+    .hero{
+      position:relative;
+      overflow:hidden;
+      background:
+        linear-gradient(135deg, rgba(193,18,31,.22), rgba(22,155,98,.12)),
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:14px;
+    }
 
-input{
-padding:8px;
-margin:4px;
-}
+    .hero:before{
+      content:"🎯";
+      position:absolute;
+      right:18px;
+      top:10px;
+      font-size:64px;
+      opacity:.12;
+    }
 
-button{
-padding:8px 14px;
-margin:4px;
-border:none;
-border-radius:6px;
-background:#d10000;
-color:white;
-cursor:pointer;
-}
+    .title{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+    }
 
-button:hover{
-background:#ff0000;
-}
+    .logo{
+      width:56px;
+      height:56px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(circle at center, #fff 0 6px, #111 6px 13px, #c1121f 13px 20px, #111 20px 28px, #169b62 28px 36px);
+      box-shadow:inset 0 0 0 2px rgba(255,255,255,.06), 0 10px 22px rgba(0,0,0,.35);
+      font-size:22px;
+    }
 
-table{
-width:100%;
-border-collapse:collapse;
-}
+    h1{
+      margin:0;
+      font-size:clamp(24px,3vw,40px);
+      line-height:1.1;
+    }
 
-th,td{
-padding:8px;
-border-bottom:1px solid #333;
-text-align:center;
-}
+    .sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:14px;
+    }
 
-.rank1{color:gold}
-.rank2{color:silver}
-.rank3{color:#cd7f32}
+    .top-actions{
+      margin-top:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
 
-</style>
+    .stats{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:10px;
+    }
 
+    .stat{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      min-height:78px;
+    }
+
+    .stat .l{
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:6px;
+    }
+
+    .stat .v{
+      font-size:28px;
+      font-weight:700;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin:14px 0;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:380px 1fr;
+      gap:14px;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .card-head{
+      padding:16px 16px 0 16px;
+    }
+
+    .card-title{
+      margin:0;
+      font-size:20px;
+    }
+
+    .card-sub{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:6px;
+      line-height:1.35;
+    }
+
+    .card-body{
+      padding:16px;
+    }
+
+    .section{
+      margin-bottom:14px;
+      padding:14px;
+      background:rgba(0,0,0,.18);
+      border:1px solid var(--line);
+      border-radius:18px;
+    }
+
+    .section:last-child{margin-bottom:0}
+
+    .section h3{
+      margin:0 0 8px 0;
+      font-size:15px;
+    }
+
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    input, select{
+      width:100%;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#0b1118;
+      color:var(--text);
+      outline:none;
+    }
+
+    input::placeholder{color:#6d8090}
+
+    .row{display:flex; gap:8px; flex-wrap:wrap}
+    .row > *{flex:1}
+
+    button{
+      border:none;
+      cursor:pointer;
+      padding:11px 14px;
+      border-radius:14px;
+      font-weight:700;
+      color:#fff;
+      background:linear-gradient(180deg, var(--red), var(--red2));
+      box-shadow:0 8px 18px rgba(0,0,0,.24);
+    }
+
+    button:hover{filter:brightness(1.06)}
+    button.secondary{
+      background:linear-gradient(180deg,#202c39,#151d26);
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+    button.green{
+      background:linear-gradient(180deg,var(--green),var(--green2));
+    }
+    button.yellow{
+      background:linear-gradient(180deg,#ffd55f,#d8ab26);
+      color:var(--yellowText);
+    }
+    button.danger{
+      background:linear-gradient(180deg,#6d0d16,#4e0910);
+    }
+    button:disabled{
+      cursor:not-allowed;
+      filter:grayscale(.2);
+      opacity:.62;
+    }
+
+    .quick-teams,
+    .opponents{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .chip{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      font-size:13px;
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .chip.active{
+      background:linear-gradient(180deg,var(--red),var(--red2));
+      border-color:rgba(255,255,255,.16);
+    }
+
+    .state-btn{
+      border-radius:14px;
+      font-size:13px;
+      padding:10px 12px;
+      min-width:120px;
+    }
+
+    .state-green{
+      background:linear-gradient(180deg,var(--green),var(--green2));
+    }
+
+    .state-yellow{
+      background:linear-gradient(180deg,#ffd55f,#d8ab26);
+      color:var(--yellowText);
+    }
+
+    .state-red{
+      background:linear-gradient(180deg,#8a1220,#5e0c15);
+      color:#ffd6da;
+    }
+
+    .pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .pill{
+      padding:9px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      cursor:pointer;
+      font-size:13px;
+      color:var(--text);
+    }
+
+    .pill.active{
+      background:linear-gradient(180deg,var(--red),var(--red2));
+    }
+
+    .muted{color:var(--muted)}
+
+    .match-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .match-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.18));
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:14px;
+    }
+
+    .match-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .match-name{
+      font-size:20px;
+      font-weight:700;
+      line-height:1.2;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .badge.green{background:rgba(22,155,98,.18); color:#87ffd0; border:1px solid rgba(22,155,98,.35)}
+    .badge.yellow{background:rgba(242,201,76,.18); color:#ffe28c; border:1px solid rgba(242,201,76,.35)}
+    .badge.red{background:rgba(193,18,31,.18); color:#ffb2b9; border:1px solid rgba(193,18,31,.35)}
+
+    .legs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .leg{
+      border-radius:18px;
+      padding:14px;
+      border:1px solid var(--line);
+      background:#0b1118;
+    }
+
+    .leg.green{box-shadow:inset 0 0 0 1px rgba(22,155,98,.18)}
+    .leg.yellow{box-shadow:inset 0 0 0 1px rgba(242,201,76,.18)}
+
+    .leg h4{
+      margin:0 0 8px 0;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:16px;
+    }
+
+    .vs{
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:10px;
+      min-height:34px;
+    }
+
+    .score-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .score-input{
+      width:70px;
+      text-align:center;
+      font-size:18px;
+      font-weight:700;
+    }
+
+    .leg-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#0b1118;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:640px;
+    }
+
+    th,td{
+      padding:12px 10px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
+      font-size:14px;
+    }
+
+    th{
+      color:#b7c5d1;
+      background:#0f1620;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+
+    tr:hover td{background:rgba(255,255,255,.02)}
+
+    .rank-top1{color:#ffd55f;font-weight:700}
+    .rank-top2{color:#92ffcb;font-weight:700}
+    .rank-top3{color:#ff8e99;font-weight:700}
+
+    .hidden{display:none !important}
+
+    .footer-note{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+
+    @media (max-width:1100px){
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:760px){
+      .legs{grid-template-columns:1fr}
+      .match-name{font-size:17px}
+      .wrap{padding:10px}
+      .hero{padding:14px}
+      .card-body,.card-head{padding:14px}
+      button{width:100%}
+      .row{flex-direction:column}
+      .row > *{width:100%}
+      .top-actions button{width:auto}
+      .pill-row .pill,
+      .quick-teams .chip,
+      .opponents .state-btn{width:auto}
+    }
+  </style>
 </head>
-
 <body>
-
-<header>🎯 Dart Páros Verseny</header>
-
-<div class="container">
-
-<div class="card">
-
-<h3>Játékosok</h3>
-
-<div id="players"></div>
-
-<button onclick="addPlayer()">+ játékos</button>
-
-</div>
-
-<div class="card">
-
-<h3>Páros kiválasztása</h3>
-
-<select id="team1"></select>
-<select id="team2"></select>
-
-<button onclick="createMatch()">Meccs hozzáadása</button>
-
-</div>
-
-<div class="card">
-
-<h3>Meccsek</h3>
-
-<table id="matchTable">
-<tr>
-<th>Páros 1</th>
-<th>Páros 2</th>
-<th>Eredmény</th>
-</tr>
-</table>
-
-</div>
-
-<div class="card">
-
-<h3>Ranglista</h3>
-
-<table id="ranking">
-<tr>
-<th>#</th>
-<th>Játékos</th>
-<th>Meccs</th>
-<th>Győzelem</th>
-<th>Vereség</th>
-<th>Pont</th>
-</tr>
-</table>
-
-</div>
-
-</div>
-
-<script>
-
-let players=[]
-let matches=[]
-let stats={}
-
-function addPlayer(){
-
-let name=prompt("Játékos neve")
-
-if(!name)return
-
-players.push(name)
-
-stats[name]={played:0,win:0,lose:0,points:0}
-
-renderPlayers()
-updateTeams()
-
-}
-
-function renderPlayers(){
-
-let div=document.getElementById("players")
-
-div.innerHTML=""
-
-players.forEach(p=>{
-
-let span=document.createElement("span")
-
-span.innerHTML=p+" "
-
-div.appendChild(span)
-
-})
-
-}
-
-function getTeams(){
-
-let teams=[]
-
-for(let i=0;i<players.length;i++){
-
-for(let j=i+1;j<players.length;j++){
-
-teams.push(players[i]+"-"+players[j])
-
-}
-
-}
-
-return teams
-
-}
-
-function updateTeams(){
-
-let teams=getTeams()
-
-let t1=document.getElementById("team1")
-let t2=document.getElementById("team2")
-
-t1.innerHTML=""
-t2.innerHTML=""
-
-teams.forEach(t=>{
-
-let o=document.createElement("option")
-o.text=t
-o.value=t
-
-t1.add(o.cloneNode(true))
-t2.add(o)
-
-})
-
-}
-
-function createMatch(){
-
-let a=document.getElementById("team1").value
-let b=document.getElementById("team2").value
-
-if(a==b)return
-
-let id=matches.length
-
-matches.push({a,b,score:null})
-
-renderMatches()
-
-}
-
-function renderMatches(){
-
-let table=document.getElementById("matchTable")
-
-table.innerHTML="<tr><th>Páros1</th><th>Páros2</th><th>Eredmény</th></tr>"
-
-matches.forEach((m,i)=>{
-
-let row=document.createElement("tr")
-
-row.innerHTML=`
-<td>${m.a}</td>
-<td>${m.b}</td>
-<td>
-<button onclick="setResult(${i},1)">1-0</button>
-<button onclick="setResult(${i},2)">0-1</button>
-</td>
-`
-
-table.appendChild(row)
-
-})
-
-}
-
-function setResult(i,winner){
-
-let m=matches[i]
-
-if(m.score)return
-
-let a=m.a.split("-")
-let b=m.b.split("-")
-
-stats[a[0]].played++
-stats[a[1]].played++
-stats[b[0]].played++
-stats[b[1]].played++
-
-if(winner==1){
-
-stats[a[0]].win++
-stats[a[1]].win++
-stats[b[0]].lose++
-stats[b[1]].lose++
-
-stats[a[0]].points++
-stats[a[1]].points++
-
-}else{
-
-stats[b[0]].win++
-stats[b[1]].win++
-stats[a[0]].lose++
-stats[a[1]].lose++
-
-stats[b[0]].points++
-stats[b[1]].points++
-
-}
-
-m.score=true
-
-renderRanking()
-
-}
-
-function renderRanking(){
-
-let arr=[]
-
-for(let p in stats){
-
-arr.push({name:p,...stats[p]})
-
-}
-
-arr.sort((a,b)=>b.points-a.points)
-
-let table=document.getElementById("ranking")
-
-table.innerHTML="<tr><th>#</th><th>Játékos</th><th>Meccs</th><th>Győzelem</th><th>Vereség</th><th>Pont</th></tr>"
-
-arr.forEach((p,i)=>{
-
-let row=document.createElement("tr")
-
-row.innerHTML=`
-<td class="rank${i+1}">${i+1}</td>
-<td>${p.name}</td>
-<td>${p.played}</td>
-<td>${p.win}</td>
-<td>${p.lose}</td>
-<td>${p.points}</td>
-`
-
-table.appendChild(row)
-
-})
-
-}
-
-</script>
-
+  <div class="wrap">
+    <section class="hero">
+      <div class="title">
+        <div class="logo">🎯</div>
+        <div>
+          <h1>Dart Páros Verseny</h1>
+          <div class="sub">Oda-visszavágós, egy leges rendszer. Az első csapatot kiválasztod, utána csak a valós ellenfelek jelennek meg. Piros–fekete–zöld dartos kinézettel.</div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="secondary" id="btnPageMatches">Meccsek oldal</button>
+        <button class="green" id="btnPageRanking">Ranglista oldal</button>
+        <button class="secondary" id="btnSave">Mentés</button>
+        <button class="secondary" id="btnExport">Export JSON</button>
+        <button class="secondary" id="btnImportOpen">Import JSON</button>
+        <input id="importFile" type="file" accept="application/json" class="hidden" />
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="l">Aktív játékosok</div>
+          <div class="v" id="statPlayers">0</div>
+        </div>
+        <div class="stat">
+          <div class="l">Párosítások</div>
+          <div class="v" id="statPairs">0</div>
+        </div>
+        <div class="stat">
+          <div class="l">Lezárt</div>
+          <div class="v" id="statFinished">0</div>
+        </div>
+        <div class="stat">
+          <div class="l">Félkész</div>
+          <div class="v" id="statPartial">0</div>
+        </div>
+        <div class="stat">
+          <div class="l">Nyitott</div>
+          <div class="v" id="statOpen">0</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <aside class="card" id="leftPanel">
+        <div class="card-head">
+          <h2 class="card-title">Beállítások</h2>
+          <div class="card-sub">Nem fix 16 főre működik. 4 és 24 játékos között használható. 13 fővel is teljesen jó.</div>
+        </div>
+        <div class="card-body">
+          <div class="section">
+            <h3>Játékosok száma</h3>
+            <label for="playerCount">Létszám</label>
+            <div class="row">
+              <input id="playerCount" type="number" min="4" max="24" />
+              <button id="btnSetCount">Beállítás</button>
+            </div>
+            <div class="footer-note">Ha módosítod a létszámot, a program újragenerálja a teljes páros sorsolást az aktuális névsorral.</div>
+          </div>
+
+          <div class="section">
+            <h3>Játékosnevek</h3>
+            <div id="playersEditor"></div>
+          </div>
+
+          <div class="section">
+            <h3>Első csapat kiválasztása</h3>
+            <label for="teamInput">Írd be pl. AB vagy Pisti Béla</label>
+            <div class="row">
+              <input id="teamInput" type="text" placeholder="AB vagy Pisti Béla" />
+              <button id="btnPickTeam">Kiválasztás</button>
+            </div>
+            <div class="row" style="margin-top:8px">
+              <button id="btnClearTeam" class="secondary">Szűrő törlése</button>
+              <button id="btnRebuild" class="secondary">Újragenerálás</button>
+            </div>
+            <div class="footer-note" id="activeTeamInfo">Nincs kiválasztott csapat.</div>
+            <div id="teamQuickList" class="quick-teams" style="margin-top:10px"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main>
+        <section id="pageMatches" class="page">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="card-title">Meccsek</h2>
+              <div class="card-sub">Az első csapat után a második csapatok gombként jelennek meg. Zöld: 2 meccs maradt. Sárga: 1 meccs maradt. Piros: kész, nem kattintható.</div>
+            </div>
+            <div class="card-body">
+              <div class="section">
+                <h3>Második csapat gombokkal</h3>
+                <div id="opponentsList" class="opponents"></div>
+              </div>
+
+              <div class="section">
+                <h3>Szűrés</h3>
+                <div class="pill-row" id="filterPills">
+                  <div class="pill active" data-filter="mind">Mind</div>
+                  <div class="pill" data-filter="nyitott">Csak nyitott</div>
+                  <div class="pill" data-filter="felkesz">1 meccs maradt</div>
+                  <div class="pill" data-filter="lezart">Kész párosítások</div>
+                </div>
+                <div class="row" style="margin-top:10px">
+                  <input id="searchOpponent" type="text" placeholder="Ellenfél keresése..." />
+                  <button id="btnClearOpponentSearch" class="secondary">Keresés törlése</button>
+                </div>
+              </div>
+
+              <div id="matchList" class="match-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="pageRanking" class="page hidden">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="card-title">Ranglista</h2>
+              <div class="card-sub">Külön oldalon van, hogy több hely maradjon a meccseknek.</div>
+            </div>
+            <div class="card-body">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Hely</th>
+                      <th>Játékos</th>
+                      <th>Meccs</th>
+                      <th>Győzelem</th>
+                      <th>Vereség</th>
+                      <th>Pont</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rankingBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "dart_pairs_tournament_final_v1";
+
+    const app = {
+      players: [],
+      playerCount: 13,
+      matches: [],
+      selectedTeamId: "",
+      filter: "mind",
+      opponentSearch: "",
+      page: "matches"
+    };
+
+    function makeDefaultPlayers(count){
+      const arr = [];
+      for(let i=0;i<count;i++){
+        arr.push(String.fromCharCode(65 + (i % 26)));
+      }
+      return arr;
+    }
+
+    function activePlayers(){
+      return app.players
+        .map((name, idx) => ({ idx, name: String(name || "").trim() }))
+        .filter(x => x.name !== "");
+    }
+
+    function getTeams(){
+      const ap = activePlayers();
+      const teams = [];
+      for(let i=0;i<ap.length;i++){
+        for(let j=i+1;j<ap.length;j++){
+          teams.push({
+            id: `${ap[i].idx}-${ap[j].idx}`,
+            p1: ap[i].idx,
+            p2: ap[j].idx
+          });
+        }
+      }
+      return teams;
+    }
+
+    function teamLabel(team){
+      return `${app.players[team.p1]}${app.players[team.p2]}`;
+    }
+
+    function sameTeam(a,b){
+      return a.p1 === b.p1 && a.p2 === b.p2;
+    }
+
+    function normalizeTeamInput(text){
+      const raw = String(text || "").trim();
+      if(!raw) return null;
+
+      const teams = getTeams();
+      const compact = raw.toLowerCase().replace(/\s+/g,"");
+
+      const direct = teams.find(t => teamLabel(t).toLowerCase() === compact);
+      if(direct) return direct;
+
+      const parts = raw.split(/[,;+\/| -]+/).map(x => x.trim()).filter(Boolean);
+      if(parts.length === 2){
+        const p1 = app.players.findIndex(p => String(p).trim().toLowerCase() === parts[0].toLowerCase());
+        const p2 = app.players.findIndex(p => String(p).trim().toLowerCase() === parts[1].toLowerCase());
+        if(p1 >= 0 && p2 >= 0 && p1 !== p2){
+          const [a,b] = [p1,p2].sort((x,y)=>x-y);
+          return { id:`${a}-${b}`, p1:a, p2:b };
+        }
+      }
+      return null;
+    }
+
+    function generateMatches(){
+      const teams = getTeams();
+      const matches = [];
+
+      for(let a=0;a<teams.length;a++){
+        for(let b=a+1;b<teams.length;b++){
+          const t1 = teams[a];
+          const t2 = teams[b];
+          const used = new Set([t1.p1,t1.p2,t2.p1,t2.p2]);
+
+          if(used.size === 4){
+            matches.push({
+              id: `${t1.id}_vs_${t2.id}`,
+              team1: { ...t1 },
+              team2: { ...t2 },
+              score1: "",
+              score2: "",
+              returnScore1: "",
+              returnScore2: ""
+            });
+          }
+        }
+      }
+
+      return matches;
+    }
+
+    function legPlayed(a,b){
+      return (a === "1" && b === "0") || (a === "0" && b === "1");
+    }
+
+    function matchState(m){
+      const first = legPlayed(m.score1, m.score2);
+      const second = legPlayed(m.returnScore1, m.returnScore2);
+      const left = (first ? 0 : 1) + (second ? 0 : 1);
+      return {
+        first,
+        second,
+        left
+      };
+    }
+
+    function calcStats(){
+      const active = activePlayers();
+      const map = new Map(
+        active.map(p => [p.idx, {
+          id: p.idx,
+          name: p.name,
+          played: 0,
+          wins: 0,
+          losses: 0,
+          points: 0
+        }])
+      );
+
+      function applyLeg(home, away, s1, s2){
+        if(!legPlayed(s1,s2)) return;
+        const homeWon = Number(s1) > Number(s2);
+
+        [home.p1,home.p2].forEach(id => {
+          const row = map.get(id);
+          if(!row) return;
+          row.played++;
+          if(homeWon){
+            row.wins++;
+            row.points++;
+          }else{
+            row.losses++;
+          }
+        });
+
+        [away.p1,away.p2].forEach(id => {
+          const row = map.get(id);
+          if(!row) return;
+          row.played++;
+          if(!homeWon){
+            row.wins++;
+            row.points++;
+          }else{
+            row.losses++;
+          }
+        });
+      }
+
+      app.matches.forEach(m => {
+        applyLeg(m.team1, m.team2, m.score1, m.score2);
+        applyLeg(m.team2, m.team1, m.returnScore1, m.returnScore2);
+      });
+
+      return Array.from(map.values())
+        .sort((a,b) => b.points - a.points || b.wins - a.wins || a.losses - b.losses || a.name.localeCompare(b.name))
+        .map((x,idx) => ({ ...x, rank: idx + 1 }));
+    }
+
+    function summaryStats(){
+      const finished = app.matches.filter(m => matchState(m).left === 0).length;
+      const partial = app.matches.filter(m => matchState(m).left === 1).length;
+      const open = app.matches.filter(m => matchState(m).left === 2).length;
+
+      return {
+        players: activePlayers().length,
+        pairs: app.matches.length,
+        finished,
+        partial,
+        open
+      };
+    }
+
+    function filteredMatches(){
+      let arr = [...app.matches];
+
+      if(app.selectedTeamId){
+        const [a,b] = app.selectedTeamId.split("-").map(Number);
+        const team = { p1:a, p2:b };
+        arr = arr.filter(m => sameTeam(m.team1, team));
+      }
+
+      if(app.filter === "nyitott"){
+        arr = arr.filter(m => matchState(m).left === 2);
+      }else if(app.filter === "felkesz"){
+        arr = arr.filter(m => matchState(m).left === 1);
+      }else if(app.filter === "lezart"){
+        arr = arr.filter(m => matchState(m).left === 0);
+      }
+
+      const q = app.opponentSearch.trim().toLowerCase();
+      if(q){
+        arr = arr.filter(m => teamLabel(m.team2).toLowerCase().includes(q));
+      }
+
+      return arr;
+    }
+
+    function opponentOptions(){
+      if(!app.selectedTeamId) return [];
+      const [a,b] = app.selectedTeamId.split("-").map(Number);
+      const team = { p1:a, p2:b };
+
+      return app.matches
+        .filter(m => sameTeam(m.team1, team))
+        .map(m => ({
+          id: m.id,
+          label: teamLabel(m.team2),
+          state: matchState(m)
+        }))
+        .sort((x,y) => x.label.localeCompare(y.label));
+    }
+
+    function saveData(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(app));
+      alert("Mentve ezen az eszközön.");
+    }
+
+    function loadData(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        app.playerCount = 13;
+        app.players = makeDefaultPlayers(13);
+        app.matches = generateMatches();
+        return;
+      }
+      try{
+        const parsed = JSON.parse(raw);
+        app.players = parsed.players || makeDefaultPlayers(13);
+        app.playerCount = parsed.playerCount || app.players.length || 13;
+        app.matches = parsed.matches || generateMatches();
+        app.selectedTeamId = parsed.selectedTeamId || "";
+        app.filter = parsed.filter || "mind";
+        app.opponentSearch = parsed.opponentSearch || "";
+        app.page = parsed.page || "matches";
+      }catch(e){
+        app.playerCount = 13;
+        app.players = makeDefaultPlayers(13);
+        app.matches = generateMatches();
+      }
+    }
+
+    function exportData(){
+      const blob = new Blob([JSON.stringify(app, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "dart-verseny-mentes.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(file){
+      const reader = new FileReader();
+      reader.onload = e => {
+        try{
+          const parsed = JSON.parse(String(e.target.result || "{}"));
+          app.players = parsed.players || makeDefaultPlayers(13);
+          app.playerCount = parsed.playerCount || app.players.length || 13;
+          app.matches = parsed.matches || generateMatches();
+          app.selectedTeamId = parsed.selectedTeamId || "";
+          app.filter = parsed.filter || "mind";
+          app.opponentSearch = parsed.opponentSearch || "";
+          app.page = parsed.page || "matches";
+          renderAll();
+          saveDataSilently();
+          alert("Mentés visszatöltve.");
+        }catch(err){
+          alert("Hibás JSON fájl.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function saveDataSilently(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(app));
+    }
+
+    function setPlayerCount(){
+      let count = Number(document.getElementById("playerCount").value || 13);
+      if(count < 4) count = 4;
+      if(count > 24) count = 24;
+
+      const next = [];
+      for(let i=0;i<count;i++){
+        next.push(app.players[i] ?? String.fromCharCode(65 + (i % 26)));
+      }
+
+      app.playerCount = count;
+      app.players = next;
+      app.selectedTeamId = "";
+      app.opponentSearch = "";
+      app.matches = generateMatches();
+      renderAll();
+      saveDataSilently();
+    }
+
+    function rebuildSchedule(){
+      app.selectedTeamId = "";
+      app.opponentSearch = "";
+      app.matches = generateMatches();
+      renderAll();
+      saveDataSilently();
+      alert("Újragenerálva.");
+    }
+
+    function clearTeam(){
+      app.selectedTeamId = "";
+      app.opponentSearch = "";
+      document.getElementById("teamInput").value = "";
+      renderAll();
+      saveDataSilently();
+    }
+
+    function pickTeam(){
+      const input = document.getElementById("teamInput").value;
+      const found = normalizeTeamInput(input);
+      if(!found){
+        alert("Nem találtam ilyen párost.");
+        return;
+      }
+      app.selectedTeamId = found.id;
+      app.opponentSearch = "";
+      renderAll();
+      saveDataSilently();
+    }
+
+    function chooseQuickTeam(id){
+      app.selectedTeamId = id;
+      const team = getTeams().find(t => t.id === id);
+      document.getElementById("teamInput").value = team ? teamLabel(team) : "";
+      app.opponentSearch = "";
+      renderAll();
+      saveDataSilently();
+    }
+
+    function setFilter(filter){
+      app.filter = filter;
+      document.querySelectorAll("#filterPills .pill").forEach(x => {
+        x.classList.toggle("active", x.dataset.filter === filter);
+      });
+      renderMatches();
+      saveDataSilently();
+    }
+
+    function setOpponentSearch(text){
+      app.opponentSearch = text || "";
+      renderMatches();
+      saveDataSilently();
+    }
+
+    function setPage(page){
+      app.page = page;
+      document.getElementById("pageMatches").classList.toggle("hidden", page !== "matches");
+      document.getElementById("pageRanking").classList.toggle("hidden", page !== "ranking");
+      document.getElementById("btnPageMatches").classList.toggle("green", page === "matches");
+      document.getElementById("btnPageMatches").classList.toggle("secondary", page !== "matches");
+      document.getElementById("btnPageRanking").classList.toggle("green", page === "ranking");
+      document.getElementById("btnPageRanking").classList.toggle("secondary", page !== "ranking");
+      saveDataSilently();
+    }
+
+    function clearMatch(id){
+      const m = app.matches.find(x => x.id === id);
+      if(!m) return;
+      m.score1 = "";
+      m.score2 = "";
+      m.returnScore1 = "";
+      m.returnScore2 = "";
+      renderAll();
+      saveDataSilently();
+    }
+
+    function setQuickResult(id, leg, winner){
+      const m = app.matches.find(x => x.id === id);
+      if(!m) return;
+
+      if(leg === 1){
+        if(winner === 1){
+          m.score1 = "1";
+          m.score2 = "0";
+        }else{
+          m.score1 = "0";
+          m.score2 = "1";
+        }
+      }else{
+        if(winner === 1){
+          m.returnScore1 = "1";
+          m.returnScore2 = "0";
+        }else{
+          m.returnScore1 = "0";
+          m.returnScore2 = "1";
+        }
+      }
+
+      renderAll();
+      saveDataSilently();
+    }
+
+    function setManualScore(id, field, value){
+      const m = app.matches.find(x => x.id === id);
+      if(!m) return;
+
+      const v = String(value || "").replace(/[^01]/g, "").slice(0,1);
+      m[field] = v;
+
+      // ha egyik 0 vagy 1, a másik legyen ellentétes, ha ugyanaz lenne, hagyjuk kézi szerkesztésre
+      renderRanking();
+      renderStats();
+      renderOpponents();
+      saveDataSilently();
+    }
+
+    function renderPlayersEditor(){
+      const box = document.getElementById("playersEditor");
+      box.innerHTML = "";
+
+      const grid = document.createElement("div");
+      grid.style.display = "grid";
+      grid.style.gridTemplateColumns = "repeat(auto-fit,minmax(110px,1fr))";
+      grid.style.gap = "8px";
+
+      app.players.forEach((name, idx) => {
+        const wrap = document.createElement("div");
+
+        const lab = document.createElement("label");
+        lab.textContent = `Játékos ${idx + 1}`;
+
+        const inp = document.createElement("input");
+        inp.value = name;
+        inp.addEventListener("change", () => {
+          app.players[idx] = inp.value;
+          renderAll();
+          saveDataSilently();
+        });
+
+        wrap.appendChild(lab);
+        wrap.appendChild(inp);
+        grid.appendChild(wrap);
+      });
+
+      box.appendChild(grid);
+    }
+
+    function renderQuickTeams(){
+      const box = document.getElementById("teamQuickList");
+      box.innerHTML = "";
+
+      getTeams().slice(0, 32).forEach(t => {
+        const b = document.createElement("div");
+        b.className = "chip" + (app.selectedTeamId === t.id ? " active" : "");
+        b.textContent = teamLabel(t);
+        b.onclick = () => chooseQuickTeam(t.id);
+        box.appendChild(b);
+      });
+    }
+
+    function renderActiveTeamInfo(){
+      const el = document.getElementById("activeTeamInfo");
+      if(!app.selectedTeamId){
+        el.textContent = "Nincs kiválasztott csapat.";
+        return;
+      }
+      const [a,b] = app.selectedTeamId.split("-").map(Number);
+      el.textContent = `Aktív csapat: ${teamLabel({p1:a,p2:b})}`;
+    }
+
+    function renderOpponents(){
+      const box = document.getElementById("opponentsList");
+      box.innerHTML = "";
+
+      const opts = opponentOptions();
+      if(!app.selectedTeamId){
+        box.innerHTML = `<div class="muted">Előbb válassz első csapatot.</div>`;
+        return;
+      }
+      if(opts.length === 0){
+        box.innerHTML = `<div class="muted">Ehhez a csapathoz nincs ellenfél.</div>`;
+        return;
+      }
+
+      opts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "state-btn ";
+        if(opt.state.left === 2) btn.className += "state-green";
+        else if(opt.state.left === 1) btn.className += "state-yellow";
+        else btn.className += "state-red";
+        btn.textContent = `${opt.label} · ${opt.state.left} meccs`;
+        btn.disabled = opt.state.left === 0;
+        btn.onclick = () => {
+          setOpponentSearch(opt.label);
+          document.getElementById("searchOpponent").value = opt.label;
+        };
+        box.appendChild(btn);
+      });
+    }
+
+    function renderStats(){
+      const s = summaryStats();
+      document.getElementById("statPlayers").textContent = s.players;
+      document.getElementById("statPairs").textContent = s.pairs;
+      document.getElementById("statFinished").textContent = s.finished;
+      document.getElementById("statPartial").textContent = s.partial;
+      document.getElementById("statOpen").textContent = s.open;
+    }
+
+    function renderMatches(){
+      const box = document.getElementById("matchList");
+      box.innerHTML = "";
+
+      const arr = filteredMatches();
+
+      if(arr.length === 0){
+        box.innerHTML = `<div class="section"><div class="muted">Nincs ilyen meccs a jelenlegi szűrés mellett.</div></div>`;
+        return;
+      }
+
+      arr.forEach(m => {
+        const st = matchState(m);
+        const stateClass = st.left === 2 ? "green" : st.left === 1 ? "yellow" : "red";
+
+        const card = document.createElement("div");
+        card.className = "match-card";
+
+        const top = document.createElement("div");
+        top.className = "match-top";
+        top.innerHTML = `
+          <div>
+            <div class="badge ${stateClass}">${st.left} meccs maradt</div>
+            <div class="match-name" style="margin-top:8px">${teamLabel(m.team1)} ➜ ${teamLabel(m.team2)}</div>
+          </div>
+        `;
+
+        const clearBtn = document.createElement("button");
+        clearBtn.className = "secondary";
+        clearBtn.textContent = "Mindkét meccs törlése";
+        clearBtn.onclick = () => clearMatch(m.id);
+        top.appendChild(clearBtn);
+
+        const legs = document.createElement("div");
+        legs.className = "legs";
+        legs.innerHTML = `
+          <div class="leg green">
+            <h4>➡ 1. meccs</h4>
+            <div class="vs">${teamLabel(m.team1)} vs ${teamLabel(m.team2)}</div>
+            <div class="score-row">
+              <input class="score-input" value="${m.score1}" data-id="${m.id}" data-field="score1" />
+              <span>-</span>
+              <input class="score-input" value="${m.score2}" data-id="${m.id}" data-field="score2" />
+            </div>
+            <div class="leg-actions">
+              <button class="green" data-quick="${m.id}|1|1">${teamLabel(m.team1)} nyer</button>
+              <button class="danger" data-quick="${m.id}|1|2">${teamLabel(m.team2)} nyer</button>
+            </div>
+          </div>
+
+          <div class="leg yellow">
+            <h4>⬅ 2. meccs</h4>
+            <div class="vs">${teamLabel(m.team2)} vs ${teamLabel(m.team1)}</div>
+            <div class="score-row">
+              <input class="score-input" value="${m.returnScore1}" data-id="${m.id}" data-field="returnScore1" />
+              <span>-</span>
+              <input class="score-input" value="${m.returnScore2}" data-id="${m.id}" data-field="returnScore2" />
+            </div>
+            <div class="leg-actions">
+              <button class="green" data-quick="${m.id}|2|1">${teamLabel(m.team2)} nyer</button>
+              <button class="danger" data-quick="${m.id}|2|2">${teamLabel(m.team1)} nyer</button>
+            </div>
+          </div>
+        `;
+
+        card.appendChild(top);
+        card.appendChild(legs);
+        box.appendChild(card);
+      });
+
+      box.querySelectorAll("input[data-field]").forEach(inp => {
+        inp.addEventListener("input", () => {
+          setManualScore(inp.dataset.id, inp.dataset.field, inp.value);
+          inp.value = inp.value.replace(/[^01]/g, "").slice(0,1);
+        });
+      });
+
+      box.querySelectorAll("button[data-quick]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const [id, leg, winner] = btn.dataset.quick.split("|");
+          setQuickResult(id, Number(leg), Number(winner));
+        });
+      });
+    }
+
+    function renderRanking(){
+      const tbody = document.getElementById("rankingBody");
+      tbody.innerHTML = "";
+
+      calcStats().forEach((r, idx) => {
+        const tr = document.createElement("tr");
+        const rankClass = idx === 0 ? "rank-top1" : idx === 1 ? "rank-top2" : idx === 2 ? "rank-top3" : "";
+        const prefix = idx === 0 ? "🎯 " : idx === 1 ? "🟢 " : idx === 2 ? "🔴 " : "";
+
+        tr.innerHTML = `
+          <td class="${rankClass}">${r.rank}</td>
+          <td>${prefix}${r.name}</td>
+          <td>${r.played}</td>
+          <td>${r.wins}</td>
+          <td>${r.losses}</td>
+          <td>${r.points}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAll(){
+      document.getElementById("playerCount").value = app.playerCount;
+      document.getElementById("searchOpponent").value = app.opponentSearch;
+      renderPlayersEditor();
+      renderQuickTeams();
+      renderActiveTeamInfo();
+      renderStats();
+      renderOpponents();
+      renderMatches();
+      renderRanking();
+      setPage(app.page);
+      document.querySelectorAll("#filterPills .pill").forEach(x => {
+        x.classList.toggle("active", x.dataset.filter === app.filter);
+      });
+    }
+
+    function bindEvents(){
+      document.getElementById("btnSetCount").onclick = setPlayerCount;
+      document.getElementById("btnRebuild").onclick = rebuildSchedule;
+      document.getElementById("btnPickTeam").onclick = pickTeam;
+      document.getElementById("btnClearTeam").onclick = clearTeam;
+      document.getElementById("btnSave").onclick = saveData;
+      document.getElementById("btnExport").onclick = exportData;
+      document.getElementById("btnImportOpen").onclick = () => document.getElementById("importFile").click();
+      document.getElementById("importFile").addEventListener("change", e => {
+        const file = e.target.files && e.target.files[0];
+        if(file) importData(file);
+        e.target.value = "";
+      });
+
+      document.getElementById("btnPageMatches").onclick = () => setPage("matches");
+      document.getElementById("btnPageRanking").onclick = () => setPage("ranking");
+
+      document.getElementById("searchOpponent").addEventListener("input", e => {
+        setOpponentSearch(e.target.value);
+      });
+
+      document.getElementById("btnClearOpponentSearch").onclick = () => {
+        document.getElementById("searchOpponent").value = "";
+        setOpponentSearch("");
+      };
+
+      document.querySelectorAll("#filterPills .pill").forEach(p => {
+        p.onclick = () => setFilter(p.dataset.filter);
+      });
+    }
+
+    function init(){
+      loadData();
+      if(!app.players.length){
+        app.players = makeDefaultPlayers(app.playerCount);
+      }
+      if(!app.matches.length){
+        app.matches = generateMatches();
+      }
+      bindEvents();
+      renderAll();
+    }
+
+    init();
+  </script>
 </body>
 </html>
